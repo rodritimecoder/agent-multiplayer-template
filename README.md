@@ -1,6 +1,6 @@
 # Multiplayer Cloud Workspace & Homelab GPU Agent Template
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/YOUR_USER/YOUR_REPO)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/rodritimecoder/agent-multiplayer-template)
 
 Cloud development environment with **real-time multiplayer** (Browser Live Share, Zed, or `tmux`) connected to a **32GB VRAM Homelab GPU cluster** via Tailscale Funnel + LiteLLM, with automatic failover to **OpenRouter Free** and **Gemini**—plus up to **20 parallel GitHub Actions subagents**.
 
