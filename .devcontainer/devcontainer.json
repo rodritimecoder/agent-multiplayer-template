@@ -1,0 +1,29 @@
+{
+  "name": "Multiplayer Agent & Homelab GPU Workspace",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "MS-vsliveshare.vsliveshare"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.autoSave": "afterDelay"
+      }
+    }
+  },
+  "forwardPorts": [3000, 4000, 8080, 9222],
+  "remoteEnv": {
+    "HOMELAB_LITELLM_URL": "${localEnv:HOMELAB_LITELLM_URL}",
+    "HOMELAB_LITELLM_KEY": "${localEnv:HOMELAB_LITELLM_KEY}",
+    "OPENROUTER_API_KEY": "${localEnv:OPENROUTER_API_KEY}",
+    "GEMINI_API_KEY": "${localEnv:GEMINI_API_KEY}"
+  },
+  "postCreateCommand": "bash .devcontainer/bootstrap.sh"
+}
