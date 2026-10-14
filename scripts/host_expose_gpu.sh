@@ -10,23 +10,24 @@ if [[ ! -f "$ENV_FILE" ]]; then
 fi
 source "$ENV_FILE"
 
-# 2. Ensure LiteLLM Gateway is running on port 4000 with master_key protection
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-LITELLM_CFG="$REPO_ROOT/.agents/skills/litellm-vram-switcher/config/litellm_config.yaml"
-if ! ss -tulpn 2>/dev/null | grep -q ":4000 "; then
-  echo "Starting LiteLLM Gateway on 127.0.0.1:4000..."
-  nohup litellm \
-    --config "$LITELLM_CFG" \
-    --port 4000 \
-    --host 127.0.0.1 \
-    --master_key "$HOMELAB_LITELLM_KEY" \
-    > /tmp/litellm_funnel.log 2>&1 &
-  sleep 2
+# 2. Determine target inference port (llama-swap :8000 -> LiteLLM :4000 -> Direct :8080)
+if ss -tulpn 2>/dev/null | grep -q ":8000 "; then
+  TARGET_PORT=8000
+  echo "Targeting active llama-swap proxy on port 8000..."
+elif ss -tulpn 2>/dev/null | grep -q ":4000 "; then
+  TARGET_PORT=4000
+  echo "Targeting active LiteLLM Gateway on port 4000..."
+elif ss -tulpn 2>/dev/null | grep -q ":8080 "; then
+  TARGET_PORT=8080
+  echo "Targeting direct primary LLM on port 8080..."
+else
+  TARGET_PORT=8000
+  echo "Starting llama-swap on port 8000..."
+  vram-rig-ctl llama-swap-up || true
 fi
 
-# 3. Enable Tailscale Funnel on port 4000 -> public HTTPS 443
-tailscale funnel --bg --https=443 http://127.0.0.1:4000
+# 3. Enable Tailscale Funnel on selected port -> public HTTPS 443
+tailscale funnel --bg --https=443 "http://127.0.0.1:${TARGET_PORT}"
 
 TS_DNS=$(tailscale status --json | jq -r '.Self.DNSName | rtrimstr(".")')
 
