@@ -11,7 +11,9 @@ fi
 source "$ENV_FILE"
 
 # 2. Ensure LiteLLM Gateway is running on port 4000 with master_key protection
-LITELLM_CFG=".agents/skills/litellm-vram-switcher/config/litellm_config.yaml"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+LITELLM_CFG="$REPO_ROOT/.agents/skills/litellm-vram-switcher/config/litellm_config.yaml"
 if ! ss -tulpn 2>/dev/null | grep -q ":4000 "; then
   echo "Starting LiteLLM Gateway on 127.0.0.1:4000..."
   nohup litellm \
